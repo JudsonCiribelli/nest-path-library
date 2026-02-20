@@ -1,0 +1,102 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?  @unique
+  role      Role     @default(CLIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  loans   Loan[] // Histórico de empréstimos do usuário
+  reviews Review[] // Avaliações que o usuário fez
+
+  @@map("users")
+}
+
+model Author {
+  id        String    @id @default(uuid())
+  name      String
+  bio       String?
+  birthDate DateTime?
+
+  books   Book[] // Um autor tem muitos livros
+  reviews Review[] // Avaliações recebidas pelo autor (opcional, ou nos livros)
+
+  @@map("authors")
+}
+
+model Book {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  pages       Int
+  status      BookStatus @default(AVAILABLE)
+
+  // Relação com Autor
+  authorId String
+  author   Author @relation(fields: [authorId], references: [id])
+
+  loans   Loan[] // Histórico de quem alugou este livro
+  reviews Review[] // Avaliações deste livro
+
+  @@map("books")
+}
+
+model Loan {
+  id         String    @id @default(uuid())
+  loanDate   DateTime  @default(now())
+  returnDate DateTime? // Fica null enquanto não for devolvido
+  dueDate    DateTime // Data limite para devolução
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  bookId String
+  book   Book   @relation(fields: [bookId], references: [id])
+
+  @@map("loans")
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  stars     Int // Ex: 1 a 5
+  comment   String?
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  bookId String?
+  book   Book?   @relation(fields: [bookId], references: [id])
+
+  authorId String?
+  author   Author? @relation(fields: [authorId], references: [id])
+
+  @@map("reviews")
+}
+
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum BookStatus {
+  AVAILABLE
+  BORROWED
+  MAINTENANCE
+}
