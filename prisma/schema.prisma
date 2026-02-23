@@ -54,6 +54,7 @@ model Book {
   title       String
   description String?
   pages       Int
+  year        Int
   status      BookStatus @default(AVAILABLE)
 
   authorId String
