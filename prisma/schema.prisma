@@ -40,6 +40,15 @@ model Author {
   @@map("authors")
 }
 
+model Category {
+  id   String @id @default(uuid())
+  name String @unique // Ex: Ficção, Científico, Romance
+
+  books Book[]
+
+  @@map("categories")
+}
+
 model Book {
   id          String     @id @default(uuid())
   title       String
@@ -47,12 +56,12 @@ model Book {
   pages       Int
   status      BookStatus @default(AVAILABLE)
 
-  // Relação com Autor
   authorId String
   author   Author @relation(fields: [authorId], references: [id])
 
-  loans   Loan[] // Histórico de quem alugou este livro
-  reviews Review[] // Avaliações deste livro
+  categories Category[]
+  loans      Loan[] // Histórico de quem alugou este livro
+  reviews    Review[] // Avaliações deste livro
 
   @@map("books")
 }
