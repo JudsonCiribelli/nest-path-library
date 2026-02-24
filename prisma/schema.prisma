@@ -60,9 +60,11 @@ model Book {
   authorId String
   author   Author @relation(fields: [authorId], references: [id])
 
-  categories Category[]
-  loans      Loan[] // Histórico de quem alugou este livro
-  reviews    Review[] // Avaliações deste livro
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  loans   Loan[] // Histórico de quem alugou este livro
+  reviews Review[] // Avaliações deste livro
 
   @@map("books")
 }
