@@ -13,6 +13,9 @@ export class BooksService {
     const allBooks = await this.prisma.book.findMany({
       take: limit,
       skip: offset,
+      where: {
+        status: 'AVAILABLE',
+      },
     });
 
     return allBooks;
