@@ -4,38 +4,35 @@ import {
   Delete,
   Get,
   Param,
-  ParseIntPipe,
-  Patch,
   Post,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { LoggerInterceptor } from 'src/common/interceptor/logger.interceptor';
+import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
 
 @Controller('books')
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
   @Get()
+  @UseInterceptors(LoggerInterceptor)
+  @UseInterceptors(TransformInterceptor)
   listAllBooks(@Query() paginationDto: PaginationDto) {
     return this.booksService.listAllBooks(paginationDto);
   }
 
   @Get(':id')
-  returnOneBook(@Param('id', ParseIntPipe) id: number) {
-    console.log(id);
+  returnOneBook(@Param('id') id: string) {
     return this.booksService.findOneBook(id);
   }
 
   @Post()
   createBook(@Body() createBookDto: CreateBookDto) {
     return this.booksService.createNewBook(createBookDto);
-  }
-
-  @Patch(':id')
-  updateBook(@Param('id', ParseIntPipe) id: number, @Body() body: any) {
-    return this.booksService.updateABook(id, body);
   }
 
   @Delete(':id')
