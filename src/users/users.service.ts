@@ -1,24 +1,30 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { hash } from 'bcrypt';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { HashingServiceProtocol } from 'src/auth/hash/hashing.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly hashingService: HashingServiceProtocol,
+  ) {}
 
   async createUser(createUserDto: CreateUserDto) {
-    const passwordHash = await hash(createUserDto.password, 8);
-
-    createUserDto.password = passwordHash;
-
+    const passwordHash = await this.hashingService.hash(createUserDto.password);
     try {
       const user = await this.prisma.user.create({
-        data: createUserDto,
+        data: {
+          name: createUserDto.name,
+          email: createUserDto.email,
+          phone: createUserDto.phone,
+          password: passwordHash,
+        },
         select: {
           name: true,
           email: true,
+          phone: true,
           createdAt: true,
         },
       });
@@ -79,14 +85,40 @@ export class UsersService {
         );
       }
 
+      const dataUser: {
+        name?: string;
+        email?: string;
+        phone?: string;
+        password?: string;
+      } = {
+        name: updateUserDto.name,
+        email: updateUserDto.email,
+        phone: updateUserDto.phone,
+      };
+
+      if (updateUserDto.password) {
+        const passwordHash = await this.hashingService.hash(
+          updateUserDto.password,
+        );
+        dataUser[`password`] = passwordHash;
+      }
+
       const updatedUser = await this.prisma.user.update({
         where: {
           id: userExist.id,
         },
-        data: updateUserDto,
+        data: {
+          name: dataUser.name,
+          email: dataUser.email,
+          phone: dataUser.phone,
+          password: dataUser?.password
+            ? dataUser?.password
+            : userExist.password,
+        },
         select: {
           name: true,
           email: true,
+          phone: true,
           createdAt: true,
         },
       });
