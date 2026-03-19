@@ -52,13 +52,13 @@ model Book {
   status      BookStatus @default(AVAILABLE)
 
   authorId String
-  author   Author @relation(fields: [authorId], references: [id])
+  author   Author @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
-  loans   Loan[] // Histórico de quem alugou este livro
-  reviews Review[] // Avaliações deste livro
+  loans   Loan[]
+  reviews Review[]
 
   @@map("books")
 }
@@ -66,11 +66,11 @@ model Book {
 model Loan {
   id         String    @id @default(uuid())
   loanDate   DateTime  @default(now())
-  returnDate DateTime? // Fica null enquanto não for devolvido
-  dueDate    DateTime // Data limite para devolução
+  returnDate DateTime?
+  dueDate    DateTime
 
   userId String
-  user   User   @relation(fields: [userId], references: [id])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   bookId String
   book   Book   @relation(fields: [bookId], references: [id], onDelete: Cascade)
@@ -80,7 +80,7 @@ model Loan {
 
 model Review {
   id        String   @id @default(uuid())
-  stars     Int // Ex: 1 a 5
+  stars     Int
   comment   String?
   createdAt DateTime @default(now())
 
