@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { BooksService } from './books.service';
@@ -13,6 +14,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { LoggerInterceptor } from 'src/common/interceptor/logger.interceptor';
 import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
+import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 
 @Controller('books')
 export class BooksController {
@@ -31,6 +33,7 @@ export class BooksController {
   }
 
   @Post()
+  @UseGuards(AuthTokenGuard)
   createBook(@Body() createBookDto: CreateBookDto) {
     return this.booksService.createNewBook(createBookDto);
   }
