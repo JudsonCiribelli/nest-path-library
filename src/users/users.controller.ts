@@ -7,12 +7,14 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 
 @Controller('users')
 export class UsersController {
@@ -40,6 +42,7 @@ export class UsersController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthTokenGuard)
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
