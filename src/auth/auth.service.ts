@@ -18,29 +18,34 @@ export class AuthService {
   ) {}
 
   async SignInUser(loginUserDto: LoginUserDto) {
-    const userEmailExists = await this.prisma.user.findUnique({
+    const user = await this.prisma.user.findUnique({
       where: {
         email: loginUserDto.email,
       },
     });
 
-    if (!userEmailExists) {
-      throw new HttpException('Email não encontrado!', HttpStatus.NOT_FOUND);
+    if (!user) {
+      throw new HttpException('Credenciais inválidas', HttpStatus.BAD_REQUEST);
     }
 
     const passwordIsValid = await this.hashingService.compare(
       loginUserDto.password,
-      userEmailExists.password,
+      user.password,
     );
 
     if (!passwordIsValid) {
       throw new HttpException('Senha inválida!', HttpStatus.UNAUTHORIZED);
     }
 
+    const payload = {
+      sub: user.id,
+      email: user.email,
+    };
+
     const token = await this.jwtService.signAsync(
       {
-        sub: userEmailExists.id,
-        email: userEmailExists.email,
+        sub: user.id,
+        email: user.email,
       },
       {
         secret: this.jwtConfiguration.secret,
@@ -51,7 +56,7 @@ export class AuthService {
     );
 
     return {
-      message: `Usuário ${userEmailExists.name} logado com sucesso!, token: ${token}`,
+      message: `Usuário ${user.name} logado com sucesso!, token: ${token}`,
     };
   }
 
