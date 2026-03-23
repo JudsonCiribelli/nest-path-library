@@ -40,23 +40,23 @@ export class AuthService {
     const payload = {
       sub: user.id,
       email: user.email,
+      role: user.role,
     };
 
-    const token = await this.jwtService.signAsync(
-      {
-        sub: user.id,
-        email: user.email,
-      },
-      {
-        secret: this.jwtConfiguration.secret,
-        expiresIn: this.jwtConfiguration.jwtTtl as any,
-        audience: this.jwtConfiguration.audience,
-        issuer: this.jwtConfiguration.issuer,
-      },
-    );
+    const token = await this.jwtService.signAsync(payload, {
+      secret: this.jwtConfiguration.secret,
+      expiresIn: this.jwtConfiguration.jwtTtl as any,
+      audience: this.jwtConfiguration.audience,
+      issuer: this.jwtConfiguration.issuer,
+    });
 
     return {
-      message: `Usuário ${user.name} logado com sucesso!, token: ${token}`,
+      token,
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     };
   }
 
