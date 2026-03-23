@@ -99,4 +99,47 @@ export class AuthorService {
       throw new BadRequestException('Erro ao obter detalhes do autor.');
     }
   }
+
+  async updateAuthor(id: string, updateAuthorDTO: CreateAuthorDto) {
+    try {
+      const authorExists = await this.prisma.author.findUnique({
+        where: {
+          id,
+        },
+      });
+
+      if (!authorExists) {
+        throw new NotFoundException('Autor não encontrado para atualização.');
+      }
+
+      const dataAuthor: {
+        name?: string;
+        bio?: string;
+        birthDate?: Date;
+      } = {
+        name: updateAuthorDTO.name,
+        bio: updateAuthorDTO.bio,
+        birthDate: updateAuthorDTO.birthDate,
+      };
+
+      const author = await this.prisma.author.update({
+        where: {
+          id: authorExists.id,
+        },
+        data: {
+          name: dataAuthor.name,
+          bio: dataAuthor.bio,
+          birthDate: dataAuthor.birthDate
+            ? new Date(dataAuthor.birthDate)
+            : authorExists.birthDate,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Erro ao atualizar autor',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 }
