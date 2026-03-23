@@ -10,15 +10,13 @@ export class BooksService {
   async listAllBooks(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    const allBooks = await this.prisma.book.findMany({
+    return await this.prisma.book.findMany({
       take: limit,
       skip: offset,
       where: {
         status: 'AVAILABLE',
       },
     });
-
-    return allBooks;
   }
 
   async findOneBook(bookId: string) {
@@ -35,21 +33,8 @@ export class BooksService {
     return bookExist;
   }
 
-  async createNewBook(createBookDto: CreateBookDto, userId: string) {
+  async createNewBook(createBookDto: CreateBookDto) {
     try {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-      });
-
-      if (user?.role === 'CLIENT') {
-        throw new HttpException(
-          'Apenas administradores podem criar livros!',
-          HttpStatus.FORBIDDEN,
-        );
-      }
-
       const book = await this.prisma.book.create({
         data: {
           title: createBookDto.title,
@@ -71,38 +56,23 @@ export class BooksService {
     }
   }
 
-  async deleteABook(bookId: string, userId: string) {
+  async deleteABook(bookId: string) {
+    const bookExist = await this.prisma.book.findUnique({
+      where: {
+        id: bookId,
+      },
+    });
+
+    if (!bookExist) {
+      throw new HttpException('Livro não encontrado!', HttpStatus.NOT_FOUND);
+    }
+
     try {
-      const user = await this.prisma.user.findUnique({
-        where: {
-          id: userId,
-        },
-      });
-
-      if (user?.role === 'CLIENT') {
-        throw new HttpException(
-          'Apenas administradores podem excluir livros!',
-          HttpStatus.FORBIDDEN,
-        );
-      }
-
-      const bookExist = await this.prisma.book.findUnique({
+      return await this.prisma.book.delete({
         where: {
           id: bookId,
         },
       });
-
-      if (!bookExist) {
-        throw new HttpException('Livro não encontrado!', HttpStatus.NOT_FOUND);
-      }
-
-      const deletedBook = await this.prisma.book.delete({
-        where: {
-          id: bookId,
-        },
-      });
-
-      return deletedBook;
     } catch (error) {
       console.log(error);
       throw new HttpException(

@@ -15,7 +15,8 @@ import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { LoggerInterceptor } from 'src/common/interceptor/logger.interceptor';
 import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('books')
 export class BooksController {
@@ -50,20 +51,16 @@ export class BooksController {
   }
 
   @Post()
-  @UseGuards(AuthTokenGuard)
-  async createBook(
-    @Body() createBookDto: CreateBookDto,
-    @GetUser('sub') userId: string,
-  ) {
-    return this.booksService.createNewBook(createBookDto, userId);
+  @Roles('ADMIN')
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async createBook(@Body() createBookDto: CreateBookDto) {
+    return this.booksService.createNewBook(createBookDto);
   }
 
   @Delete('/book/:bookId')
-  @UseGuards(AuthTokenGuard)
-  async deleteBook(
-    @Param('bookId') bookId: string,
-    @GetUser('sub') userId: string,
-  ) {
-    return this.booksService.deleteABook(bookId, userId);
+  @Roles('ADMIN')
+  @UseGuards(AuthTokenGuard, RolesGuard)
+  async deleteBook(@Param('bookId') bookId: string) {
+    return this.booksService.deleteABook(bookId);
   }
 }
