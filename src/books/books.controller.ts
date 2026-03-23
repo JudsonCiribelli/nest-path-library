@@ -28,6 +28,11 @@ export class BooksController {
     return this.booksService.listAllBooks(paginationDto);
   }
 
+  @Get(':bookId')
+  async returnOneBook(@Param('bookId') bookId: string) {
+    return this.booksService.findOneBook(bookId);
+  }
+
   @Get('/category/:categoryId')
   async listBooksByCategory(
     @Param('categoryId') categoryId: string,
@@ -36,9 +41,12 @@ export class BooksController {
     return this.booksService.findBooksByCategory(categoryId, paginationDto);
   }
 
-  @Get(':id')
-  async returnOneBook(@Param('id') id: string) {
-    return this.booksService.findOneBook(id);
+  @Get('/author/:authorId')
+  async listBooksByAuthor(
+    @Param('authorId') authorId: string,
+    @Query() PaginationDto: PaginationDto,
+  ) {
+    return this.booksService.findBooksByAuthor(authorId, PaginationDto);
   }
 
   @Post()
@@ -50,8 +58,12 @@ export class BooksController {
     return this.booksService.createNewBook(createBookDto, userId);
   }
 
-  @Delete(':id')
-  async deleteBook(@Param('id') id: string) {
-    return this.booksService.deleteABook(id);
+  @Delete('/book/:bookId')
+  @UseGuards(AuthTokenGuard)
+  async deleteBook(
+    @Param('bookId') bookId: string,
+    @GetUser('sub') userId: string,
+  ) {
+    return this.booksService.deleteABook(bookId, userId);
   }
 }
