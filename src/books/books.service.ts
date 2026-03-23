@@ -31,6 +31,8 @@ export class BooksService {
     if (!bookExist) {
       throw new HttpException('Livro não encontrado!', HttpStatus.NOT_FOUND);
     }
+
+    return bookExist;
   }
 
   async createNewBook(createBookDto: CreateBookDto, userId: string) {
@@ -61,5 +63,26 @@ export class BooksService {
 
     console.log(bookExist);
     return bookExist;
+  }
+
+  async findBooksByCategory(categoryId: string, paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    const books = await this.prisma.book.findMany({
+      take: limit,
+      skip: offset,
+      where: {
+        categoryId: categoryId,
+      },
+    });
+
+    if (books.length === 0) {
+      throw new HttpException(
+        'Nenhum livro encontrado para esta categoria!',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return books;
   }
 }

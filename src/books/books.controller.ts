@@ -24,18 +24,26 @@ export class BooksController {
   @Get()
   @UseInterceptors(LoggerInterceptor)
   @UseInterceptors(TransformInterceptor)
-  listAllBooks(@Query() paginationDto: PaginationDto) {
+  async listAllBooks(@Query() paginationDto: PaginationDto) {
     return this.booksService.listAllBooks(paginationDto);
   }
 
+  @Get('/category/:categoryId')
+  async listBooksByCategory(
+    @Param('categoryId') categoryId: string,
+    @Query() paginationDto: PaginationDto,
+  ) {
+    return this.booksService.findBooksByCategory(categoryId, paginationDto);
+  }
+
   @Get(':id')
-  returnOneBook(@Param('id') id: string) {
+  async returnOneBook(@Param('id') id: string) {
     return this.booksService.findOneBook(id);
   }
 
   @Post()
   @UseGuards(AuthTokenGuard)
-  createBook(
+  async createBook(
     @Body() createBookDto: CreateBookDto,
     @GetUser('sub') userId: string,
   ) {
@@ -43,7 +51,7 @@ export class BooksController {
   }
 
   @Delete(':id')
-  deleteBook(@Param('id') id: string) {
+  async deleteBook(@Param('id') id: string) {
     return this.booksService.deleteABook(id);
   }
 }
