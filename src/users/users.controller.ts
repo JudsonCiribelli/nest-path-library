@@ -15,6 +15,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
+import { GetUser } from 'src/common/decorator/get-user.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -23,6 +24,13 @@ export class UsersController {
   @Get()
   async getUserLoan(@Query('userId') userId: string) {
     return this.usersService.getUserLoan(userId);
+  }
+
+  @UseGuards(AuthTokenGuard)
+  @Get('profile')
+  async getUserProfile(@GetUser('sub') userId: string) {
+    console.log('ID vindo do Token:', userId);
+    return this.usersService.getUserProfile(userId);
   }
 
   @Get('update-book-status')

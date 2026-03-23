@@ -39,6 +39,31 @@ export class UsersService {
     }
   }
 
+  async getUserProfile(userId: string) {
+    try {
+      const user = await this.prisma.user.findUnique({
+        where: {
+          id: userId,
+        },
+        select: {
+          name: true,
+          email: true,
+          phone: true,
+          loans: true,
+          createdAt: true,
+        },
+      });
+
+      return user;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Falha ao buscar perfil do usuário!',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async deleteUser(id: string) {
     try {
       const user = await this.prisma.user.findUnique({
