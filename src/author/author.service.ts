@@ -1,4 +1,11 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 
@@ -7,13 +14,7 @@ export class AuthorService {
   constructor(private prisma: PrismaService) {}
 
   async getAuthors() {
-    const authors = await this.prisma.author.findMany({});
-
-    if (!authors) {
-      throw new HttpException('Nenhum autor cadastradi', HttpStatus.NOT_FOUND);
-    }
-
-    return authors;
+    return await this.prisma.author.findMany();
   }
 
   async registerAuthor(createAuthorDto: CreateAuthorDto) {
@@ -26,47 +27,41 @@ export class AuthorService {
     });
 
     if (authorExists) {
-      throw new HttpException(
+      throw new ConflictException(
         'Já existe um autor cadastrado com este nome.',
-        HttpStatus.CONFLICT,
       );
     }
 
-    const author = await this.prisma.author.create({
-      data: {
-        name: normalizedName,
-        bio: createAuthorDto.bio,
-        birthDate: new Date(createAuthorDto.birthDate),
-      },
-    });
-
-    if (!author) {
+    try {
+      await this.prisma.author.create({
+        data: {
+          ...createAuthorDto,
+          name: normalizedName,
+          birthDate: new Date(createAuthorDto.birthDate),
+        },
+      });
+    } catch (error) {
+      console.log('Error registerAuthor:' + error);
       throw new HttpException(
         'Erro ao cadastrar autor',
         HttpStatus.BAD_REQUEST,
       );
     }
-
-    return author;
   }
 
   async deleteAuthor(id: string) {
-    const author = await this.prisma.author.findUnique({
-      where: {
-        id: id,
-      },
-    });
-
-    if (!author) {
-      return new HttpException('Autor não encontrado', HttpStatus.NOT_FOUND);
+    try {
+      return await this.prisma.author.delete({
+        where: {
+          id,
+        },
+      });
+    } catch (error) {
+      if (error.code === 'P2025') {
+        throw new NotFoundException('Autor não encontrado para exclusão.');
+      }
+      console.log('Error deleteAuthor:' + error);
+      throw new BadRequestException('Erro ao deletar autor.');
     }
-
-    const authorDeleted = await this.prisma.author.delete({
-      where: {
-        id: author.id,
-      },
-    });
-
-    return authorDeleted;
   }
 }

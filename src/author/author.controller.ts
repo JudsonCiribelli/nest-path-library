@@ -1,6 +1,18 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
+import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { Roles } from 'src/common/decorator/roles.decorator';
+import { AuthAdminGuard } from 'src/common/guards/admin.guard';
+import { RolesGuard } from 'src/common/guards/roles.guard';
 
 @Controller('author')
 export class AuthorController {
@@ -8,21 +20,20 @@ export class AuthorController {
 
   @Get()
   async getAuthors() {
-    const authors = await this.authorService.getAuthors();
-
-    return authors;
+    return await this.authorService.getAuthors();
   }
 
   @Post()
+  @Roles('ADMIN')
+  @UseGuards(AuthAdminGuard, RolesGuard)
   async createAuthor(@Body() createAuthorDto: CreateAuthorDto) {
-    const author = await this.authorService.registerAuthor(createAuthorDto);
-    return author;
+    return await this.authorService.registerAuthor(createAuthorDto);
   }
 
   @Delete(':id')
+  @Roles('ADMIN')
+  @UseGuards(AuthAdminGuard, RolesGuard)
   async deleteAuthor(@Param() id: string) {
-    const author = await this.authorService.deleteAuthor(id);
-
-    return author;
+    return await this.authorService.deleteAuthor(id);
   }
 }
