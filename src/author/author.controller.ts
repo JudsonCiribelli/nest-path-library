@@ -9,7 +9,6 @@ import {
 } from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { AuthAdminGuard } from 'src/common/guards/admin.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
@@ -21,6 +20,12 @@ export class AuthorController {
   @Get()
   async getAuthors() {
     return await this.authorService.getAuthors();
+  }
+
+  @Get(':authorId')
+  @UseGuards(AuthAdminGuard)
+  async getAuthorById(@Param('authorId') authorId: string) {
+    return this.authorService.getAuthorDetails(authorId);
   }
 
   @Post()

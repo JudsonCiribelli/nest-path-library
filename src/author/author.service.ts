@@ -64,4 +64,39 @@ export class AuthorService {
       throw new BadRequestException('Erro ao deletar autor.');
     }
   }
+
+  async getAuthorDetails(authorId: string) {
+    try {
+      const author = await this.prisma.author.findUnique({
+        where: {
+          id: authorId,
+        },
+        include: {
+          books: {
+            select: {
+              title: true,
+              description: true,
+              pages: true,
+              year: true,
+              status: true,
+              category: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!author) {
+        throw new NotFoundException('Autor não encontrado.');
+      }
+
+      return author;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Erro ao obter detalhes do autor.');
+    }
+  }
 }
