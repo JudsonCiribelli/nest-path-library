@@ -10,6 +10,5 @@ export class CreateLoanDto {
   bookId: string;
 
   @IsString()
-  @IsNotEmpty()
-  dueDate: Date;
+  dueDate?: Date;
 }

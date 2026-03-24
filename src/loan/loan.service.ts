@@ -7,25 +7,25 @@ export class LoanService {
   constructor(private prisma: PrismaService) {}
 
   async createLoan(createLoanDto: CreateLoanDto) {
+    const book = await this.prisma.book.findUnique({
+      where: {
+        id: createLoanDto.bookId,
+      },
+    });
+
+    if (!book) {
+      throw new HttpException('Livro não encontrado', HttpStatus.NOT_FOUND);
+    }
+
+    const loan = await this.prisma.loan.create({
+      data: {
+        userId: createLoanDto.userId,
+        bookId: book.id,
+        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
+      },
+    });
+
     try {
-      const book = await this.prisma.book.findUnique({
-        where: {
-          id: createLoanDto.bookId,
-        },
-      });
-
-      if (!book) {
-        throw new HttpException('Livro não encontrado', HttpStatus.NOT_FOUND);
-      }
-
-      const loan = await this.prisma.loan.create({
-        data: {
-          userId: createLoanDto.userId,
-          bookId: book.id,
-          dueDate: new Date(createLoanDto.dueDate),
-        },
-      });
-
       await this.prisma.book.update({
         where: {
           id: book.id,
