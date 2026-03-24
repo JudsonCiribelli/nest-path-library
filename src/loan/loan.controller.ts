@@ -3,6 +3,8 @@ import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan';
 import { AuthAdminGuard } from 'src/common/guards/admin.guard';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { RolesGuard } from 'src/common/guards/roles.guard';
+import { Roles } from 'src/common/decorator/roles.decorator';
 
 @Controller('loan')
 export class LoanController {
@@ -18,6 +20,13 @@ export class LoanController {
   @UseGuards(AuthAdminGuard)
   async listAllUserLoans(@GetUser('sub') userId: string) {
     return this.loanService.listAllUserLoans(userId);
+  }
+
+  @Get('loans')
+  @Roles('ADMIN')
+  @UseGuards(AuthAdminGuard, RolesGuard)
+  async listAllLoans() {
+    return this.loanService.loans();
   }
 
   @Post()

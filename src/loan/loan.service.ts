@@ -77,4 +77,27 @@ export class LoanService {
       },
     });
   }
+
+  async loans() {
+    return this.prisma.loan.findMany({
+      include: {
+        user: {
+          select: {
+            name: true,
+            email: true,
+          },
+        },
+        book: {
+          select: {
+            title: true,
+            description: true,
+            pages: true,
+            year: true,
+            author: { select: { name: true } },
+            category: { select: { name: true } },
+          },
+        },
+      },
+    });
+  }
 }
