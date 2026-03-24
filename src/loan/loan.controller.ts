@@ -14,6 +14,12 @@ export class LoanController {
     return this.loanService.listUserLoans(userId);
   }
 
+  @Get('my-history')
+  @UseGuards(AuthAdminGuard)
+  async listAllUserLoans(@GetUser('sub') userId: string) {
+    return this.loanService.listAllUserLoans(userId);
+  }
+
   @Post()
   @UseGuards(AuthAdminGuard)
   async createLoan(

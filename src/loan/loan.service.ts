@@ -69,4 +69,12 @@ export class LoanService {
       orderBy: { dueDate: 'asc' },
     });
   }
+
+  async listAllUserLoans(userId: string) {
+    return this.prisma.loan.findMany({
+      where: {
+        userId,
+      },
+    });
+  }
 }
