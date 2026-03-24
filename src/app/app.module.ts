@@ -14,6 +14,7 @@ import { LoggerMiddleware } from 'src/common/middlewares/logger.middleware';
 import { LoanModule } from 'src/loan/loan.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from 'src/auth/auth.module';
+import { ReviewModule } from 'src/review/review.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from 'src/auth/auth.module';
     UsersModule,
     LoanModule,
     AuthModule,
+    ReviewModule,
   ],
   controllers: [AppController],
   providers: [AppService],
