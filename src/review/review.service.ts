@@ -67,7 +67,6 @@ export class ReviewService {
       where: {
         id: bookId,
       },
-
       select: {
         reviews: true,
       },
@@ -106,5 +105,16 @@ export class ReviewService {
         HttpStatus.BAD_REQUEST,
       );
     }
+  }
+
+  async getAuthorReviews(authorId: string) {
+    return await this.prisma.author.findUnique({
+      where: {
+        id: authorId,
+      },
+      select: {
+        reviews: true,
+      },
+    });
   }
 }

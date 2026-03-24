@@ -30,6 +30,11 @@ export class ReviewController {
     return this.reviewService.getBookReviews(bookId);
   }
 
+  @Get('/author/:authorId')
+  async getReviewsByAuthor(@Param('authorId') authorId: string) {
+    return this.reviewService.getAuthorReviews(authorId);
+  }
+
   @Post('/book/:bookId')
   @UseGuards(AuthAdminGuard)
   async createReview(
