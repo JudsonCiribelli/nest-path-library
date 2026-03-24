@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLoanDto } from './dto/create-loan';
 
@@ -6,7 +11,7 @@ import { CreateLoanDto } from './dto/create-loan';
 export class LoanService {
   constructor(private prisma: PrismaService) {}
 
-  async createLoan(createLoanDto: CreateLoanDto) {
+  async createLoan(createLoanDto: CreateLoanDto, userId: string) {
     const book = await this.prisma.book.findUnique({
       where: {
         id: createLoanDto.bookId,
@@ -14,34 +19,54 @@ export class LoanService {
     });
 
     if (!book) {
-      throw new HttpException('Livro não encontrado', HttpStatus.NOT_FOUND);
+      throw new NotFoundException('Livro não encontrado');
     }
 
-    const loan = await this.prisma.loan.create({
-      data: {
-        userId: createLoanDto.userId,
-        bookId: book.id,
-        dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
-      },
-    });
+    if (book.status === 'BORROWED') {
+      throw new ConflictException('Livro já emprestado');
+    }
 
     try {
-      await this.prisma.book.update({
-        where: {
-          id: book.id,
-        },
-        data: {
-          status: 'BORROWED',
-        },
-      });
+      return await this.prisma.$transaction(async (tx) => {
+        const loan = await tx.loan.create({
+          data: {
+            userId: userId,
+            bookId: book.id,
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 dias
+          },
+        });
 
-      return loan;
+        await tx.book.update({
+          where: { id: book.id },
+          data: { status: 'BORROWED' },
+        });
+
+        return loan;
+      });
     } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Error ao criar empréstimo',
-        HttpStatus.BAD_REQUEST,
-      );
+      console.error('Erro na transação de empréstimo:', error);
+      throw new BadRequestException('Não foi possível processar o empréstimo.');
     }
+  }
+
+  async listUserLoans(userId: string) {
+    return this.prisma.loan.findMany({
+      where: {
+        userId,
+      },
+      include: {
+        book: {
+          select: {
+            title: true,
+            description: true,
+            pages: true,
+            year: true,
+            author: { select: { name: true } },
+            category: { select: { name: true } },
+          },
+        },
+      },
+      orderBy: { dueDate: 'asc' },
+    });
   }
 }
