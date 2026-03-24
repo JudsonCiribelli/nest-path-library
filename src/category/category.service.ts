@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
 
@@ -7,26 +13,35 @@ export class CategoryService {
   constructor(private prisma: PrismaService) {}
 
   async createCategory(createCategoryDto: CreateCategoryDto) {
-    const category = await this.prisma.category.create({
-      data: {
-        name: createCategoryDto.name,
+    const normalizedName = createCategoryDto.name.trim().toLowerCase();
+
+    const category = await this.prisma.category.findUnique({
+      where: {
+        name: normalizedName,
       },
     });
 
-    console.log(category);
-    if (category) return category;
+    if (category) {
+      throw new ConflictException('Esta categoria já está cadastrada.');
+    }
 
-    throw new HttpException('Está categoria já foi cadastrada!', 500);
+    try {
+      return await this.prisma.category.create({
+        data: {
+          name: normalizedName,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Erro ao salvar a categoria.');
+    }
   }
 
   async findAllCategory() {
-    const categories = await this.prisma.category.findMany({});
-
-    if (categories) return categories;
-
-    throw new HttpException(
-      'Não há categorias cadastradas!',
-      HttpStatus.NOT_FOUND,
-    );
+    return await this.prisma.category.findMany({
+      orderBy: {
+        name: 'asc',
+      },
+    });
   }
 }
