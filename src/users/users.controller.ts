@@ -73,6 +73,12 @@ export class UsersController {
     return this.usersService.uploadUserImage(tokenPayload, imageProfile);
   }
 
+  @Delete('/upload')
+  @UseGuards(AuthTokenGuard)
+  @UseInterceptors(TransformInterceptor)
+  async deleteUserImage(@tokenPayloadParam() tokenPayload: TokenPayloadDto) {
+    return this.usersService.deleteUserImage(tokenPayload);
+  }
   @Delete(':id')
   @UseGuards(AuthTokenGuard)
   async deleteUser(

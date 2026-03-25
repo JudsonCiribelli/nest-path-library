@@ -80,6 +80,17 @@ export class UsersService {
     }
   }
 
+  async deleteUserImage(tokenPayload: TokenPayloadDto) {
+    return await this.prisma.user.update({
+      where: {
+        id: tokenPayload.sub,
+      },
+      data: {
+        imageProfile: null,
+      },
+    });
+  }
+
   async getUserProfile(userId: string) {
     try {
       const user = await this.prisma.user.findUnique({
