@@ -7,17 +7,18 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String     @id @default(uuid())
   name      String
-  email     String   @unique
+  email     String     @unique
   password  String
-  phone     String?  @unique
-  role      Role     @default(CLIENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  phone     String?    @unique
+  active    UserStatus @default(IN_USE)
+  role      Role       @default(CLIENT)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
 
-  loans   Loan[] // Histórico de empréstimos do usuário
-  reviews Review[] // Avaliações que o usuário fez
+  loans   Loan[]
+  reviews Review[]
 
   @@map("users")
 }
@@ -28,15 +29,15 @@ model Author {
   bio       String?
   birthDate DateTime?
 
-  books   Book[] // Um autor tem muitos livros
-  reviews Review[] // Avaliações recebidas pelo autor (opcional, ou nos livros)
+  books   Book[]
+  reviews Review[]
 
   @@map("authors")
 }
 
 model Category {
   id   String @id @default(uuid())
-  name String @unique // Ex: Ficção, Científico, Romance
+  name String @unique
 
   books Book[]
 
@@ -99,6 +100,11 @@ model Review {
 enum Role {
   ADMIN
   CLIENT
+}
+
+enum UserStatus {
+  IN_USE
+  DISABLED
 }
 
 enum BookStatus {
