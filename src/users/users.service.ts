@@ -1,3 +1,5 @@
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import {
   ConflictException,
   HttpException,
@@ -45,6 +47,39 @@ export class UsersService {
     }
   }
 
+  async uploadUserImage(
+    tokenPayload: TokenPayloadDto,
+    imageProfile: Express.Multer.File,
+  ) {
+    try {
+      const extensionName = path
+        .extname(imageProfile.originalname)
+        .toLowerCase()
+        .substring(1);
+
+      const fileName = `${tokenPayload.sub}.${extensionName}`;
+      const fileLocale = path.resolve(process.cwd(), 'files', fileName);
+
+      await fs.writeFile(fileLocale, imageProfile.buffer);
+
+      await this.prisma.user.update({
+        where: {
+          id: tokenPayload.sub,
+        },
+        data: {
+          imageProfile: fileName,
+        },
+      });
+      return 'Imagem cadastrada com sucesso!';
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        'Falha ao cadastrar image',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
   async getUserProfile(userId: string) {
     try {
       const user = await this.prisma.user.findUnique({
@@ -55,6 +90,7 @@ export class UsersService {
           name: true,
           email: true,
           phone: true,
+          imageProfile: true,
           loans: true,
           createdAt: true,
         },
