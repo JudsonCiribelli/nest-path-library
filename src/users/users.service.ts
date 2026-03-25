@@ -1,8 +1,14 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { HashingServiceProtocol } from 'src/auth/hash/hashing.service';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Injectable()
 export class UsersService {
@@ -64,7 +70,7 @@ export class UsersService {
     }
   }
 
-  async deleteUser(id: string) {
+  async deleteUser(id: string, tokenPayload: TokenPayloadDto) {
     try {
       const user = await this.prisma.user.findUnique({
         where: {
@@ -76,6 +82,12 @@ export class UsersService {
         throw new HttpException(
           'Usuário não encontrado!',
           HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (user.id !== tokenPayload.sub) {
+        throw new ConflictException(
+          'Você não tem permissão para deletar este usuário!',
         );
       }
 
@@ -95,7 +107,11 @@ export class UsersService {
     }
   }
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto) {
+  async updateUser(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    tokenPayload: TokenPayloadDto,
+  ) {
     try {
       const userExist = await this.prisma.user.findUnique({
         where: {
@@ -107,6 +123,12 @@ export class UsersService {
         throw new HttpException(
           'Usuário não encontrado!',
           HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (userExist.id !== tokenPayload.sub) {
+        throw new ConflictException(
+          'Você não tem permissão para atualizar este usuário!',
         );
       }
 

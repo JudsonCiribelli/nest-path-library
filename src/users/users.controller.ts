@@ -16,6 +16,8 @@ import { TransformInterceptor } from 'src/common/interceptor/transformer.interce
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Controller('users')
 export class UsersController {
@@ -45,8 +47,11 @@ export class UsersController {
   }
 
   @Delete(':id')
-  async deleteUser(@Param('id') id: string) {
-    return this.usersService.deleteUser(id);
+  async deleteUser(
+    @Param('id') id: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.usersService.deleteUser(id, tokenPayload);
   }
 
   @Patch(':id')
@@ -54,7 +59,9 @@ export class UsersController {
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
-    return this.usersService.updateUser(id, updateUserDto);
+    console.log(tokenPayload);
+    return this.usersService.updateUser(id, updateUserDto, tokenPayload);
   }
 }
