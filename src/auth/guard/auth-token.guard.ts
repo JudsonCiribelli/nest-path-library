@@ -10,11 +10,13 @@ import { Request } from 'express';
 import jwtConfig from '../config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { REQUEST_TOKEN_PAYLOAD } from '../common/auth.constants';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class AuthTokenGuard implements CanActivate {
   constructor(
     private readonly jwtService: JwtService,
+    private readonly prisma: PrismaService,
 
     @Inject(jwtConfig.KEY)
     private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
@@ -35,6 +37,19 @@ export class AuthTokenGuard implements CanActivate {
       );
 
       request[REQUEST_TOKEN_PAYLOAD] = payload;
+
+      const userStatus = await this.prisma.user.findUnique({
+        where: {
+          id: payload?.sub,
+        },
+      });
+
+      if (userStatus?.active !== 'IN_USE') {
+        throw new UnauthorizedException(
+          'Conta desativada, entre em contato com o suporte!',
+        );
+      }
+
       return true;
     } catch (error) {
       console.log(error);
