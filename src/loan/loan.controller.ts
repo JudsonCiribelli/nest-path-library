@@ -5,6 +5,8 @@ import { AuthAdminGuard } from 'src/common/guards/admin.guard';
 import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
+import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Controller('loan')
 export class LoanController {
@@ -12,14 +14,20 @@ export class LoanController {
 
   @Get('my-actives')
   @UseGuards(AuthAdminGuard)
-  async listUserLoans(@GetUser('sub') userId: string) {
-    return this.loanService.listUserLoans(userId);
+  async listUserLoans(
+    @GetUser('sub') userId: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.loanService.listUserLoans(userId, tokenPayload);
   }
 
   @Get('my-history')
   @UseGuards(AuthAdminGuard)
-  async listAllUserLoans(@GetUser('sub') userId: string) {
-    return this.loanService.listAllUserLoans(userId);
+  async listAllUserLoans(
+    @GetUser('sub') userId: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.loanService.listAllUserLoans(userId, tokenPayload);
   }
 
   @Get('loans')
@@ -34,7 +42,8 @@ export class LoanController {
   async createLoan(
     @Body() createLoanDto: CreateLoanDto,
     @GetUser('sub') userId: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
-    return this.loanService.createLoan(createLoanDto, userId);
+    return this.loanService.createLoan(createLoanDto, userId, tokenPayload);
   }
 }

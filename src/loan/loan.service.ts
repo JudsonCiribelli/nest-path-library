@@ -6,12 +6,31 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateLoanDto } from './dto/create-loan';
+import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 
 @Injectable()
 export class LoanService {
   constructor(private prisma: PrismaService) {}
 
-  async createLoan(createLoanDto: CreateLoanDto, userId: string) {
+  async createLoan(
+    createLoanDto: CreateLoanDto,
+    userId: string,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (user.id !== tokenPayload.sub) {
+      throw new ConflictException('Token inválido para o usuário autenticado');
+    }
+
     const book = await this.prisma.book.findUnique({
       where: {
         id: createLoanDto.bookId,
@@ -49,7 +68,21 @@ export class LoanService {
     }
   }
 
-  async listUserLoans(userId: string) {
+  async listUserLoans(userId: string, tokenPayload: TokenPayloadDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (user.id !== tokenPayload.sub) {
+      throw new ConflictException('Token inválido para o usuário autenticado');
+    }
+
     return this.prisma.loan.findMany({
       where: {
         userId,
@@ -70,7 +103,21 @@ export class LoanService {
     });
   }
 
-  async listAllUserLoans(userId: string) {
+  async listAllUserLoans(userId: string, tokenPayload: TokenPayloadDto) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Usuário não encontrado');
+    }
+
+    if (user.id !== tokenPayload.sub) {
+      throw new ConflictException('Token inválido para o usuário autenticado');
+    }
+
     return this.prisma.loan.findMany({
       where: {
         userId,
