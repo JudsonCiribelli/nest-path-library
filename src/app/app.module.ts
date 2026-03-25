@@ -4,6 +4,8 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { BooksModule } from 'src/books/books.module';
@@ -26,6 +28,13 @@ import { ReviewModule } from 'src/review/review.module';
     LoanModule,
     AuthModule,
     ReviewModule,
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'files'),
+      serveRoot: '/files',
+      serveStaticOptions: {
+        index: false,
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],
