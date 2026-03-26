@@ -1,4 +1,13 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan';
 import { AuthAdminGuard } from 'src/common/guards/admin.guard';
@@ -7,6 +16,7 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
 import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
+import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 
 @Controller('loan')
 export class LoanController {
@@ -19,6 +29,11 @@ export class LoanController {
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
     return this.loanService.listUserLoans(userId, tokenPayload);
+  }
+
+  @Get()
+  async getUserLoan(@Query('userId') userId: string) {
+    return this.loanService.getUserLoan(userId);
   }
 
   @Get('my-history')
@@ -45,5 +60,14 @@ export class LoanController {
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
     return this.loanService.createLoan(createLoanDto, userId, tokenPayload);
+  }
+
+  @Patch(':id/return')
+  @UseGuards(AuthTokenGuard)
+  async updateBookStatus(
+    @Param('loanId') loanId: string,
+    @GetUser('sub') userId: string,
+  ) {
+    return this.loanService.updateBookStatus(loanId, userId);
   }
 }
