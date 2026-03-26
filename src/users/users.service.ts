@@ -21,6 +21,17 @@ export class UsersService {
 
   async createUser(createUserDto: CreateUserDto) {
     const passwordHash = await this.hashingService.hash(createUserDto.password);
+
+    const userEmailAlreadyRegister = await this.prisma.user.findUnique({
+      where: {
+        email: createUserDto.email,
+      },
+    });
+
+    if (userEmailAlreadyRegister) {
+      throw new ConflictException('Este email pertence a outra conta.');
+    }
+
     try {
       const user = await this.prisma.user.create({
         data: {
@@ -222,76 +233,6 @@ export class UsersService {
       console.log(error);
       throw new HttpException(
         'Falha ao atualizar usuário!',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async getUserLoan(userId: string) {
-    try {
-      const userLoans = await this.prisma.loan.findMany({
-        where: {
-          userId: userId,
-        },
-        include: {
-          book: true,
-        },
-        orderBy: {
-          dueDate: 'asc',
-        },
-      });
-
-      return userLoans;
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Error ao buscar empréstimos do usuário',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
-  async updateBookStatus(loanId: string) {
-    try {
-      const loan = await this.prisma.loan.findUnique({
-        where: {
-          id: loanId,
-        },
-        include: {
-          book: true,
-        },
-      });
-
-      if (!loan) {
-        throw new HttpException(
-          'Empréstimo não encontrado',
-          HttpStatus.NOT_FOUND,
-        );
-      }
-
-      await this.prisma.loan.update({
-        where: {
-          id: loan.id,
-        },
-        data: {
-          returnDate: new Date(Date.now()),
-        },
-      });
-
-      await this.prisma.book.update({
-        where: {
-          id: loan.bookId,
-        },
-        data: {
-          status: 'AVAILABLE',
-        },
-      });
-
-      return 'Livro devolvido com sucesso!';
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Error ao atualizar status do livro',
         HttpStatus.BAD_REQUEST,
       );
     }
