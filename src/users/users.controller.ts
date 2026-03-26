@@ -27,21 +27,11 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Get()
-  async getUserLoan(@Query('userId') userId: string) {
-    return this.usersService.getUserLoan(userId);
-  }
-
   @UseGuards(AuthTokenGuard)
   @Get('profile')
   async getUserProfile(@GetUser('sub') userId: string) {
     console.log('ID vindo do Token:', userId);
     return this.usersService.getUserProfile(userId);
-  }
-
-  @Get('update-book-status')
-  async updateBookStatus(@Query('loanId') loanId: string) {
-    return this.usersService.updateBookStatus(loanId);
   }
 
   @Post()
