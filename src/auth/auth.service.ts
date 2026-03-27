@@ -1,4 +1,10 @@
-import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { LoginUserDto } from './dto/login-user.dto';
 import { HashingServiceProtocol } from './hash/hashing.service';
@@ -35,7 +41,7 @@ export class AuthService {
     );
 
     if (!passwordIsValid) {
-      throw new HttpException('Senha inválida!', HttpStatus.UNAUTHORIZED);
+      throw new UnauthorizedException('Senha inválida!');
     }
 
     const payload = {
