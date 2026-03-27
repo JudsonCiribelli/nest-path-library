@@ -33,7 +33,7 @@ export class AuthorService {
     }
 
     try {
-      await this.prisma.author.create({
+      return await this.prisma.author.create({
         data: {
           ...createAuthorDto,
           name: normalizedName,
