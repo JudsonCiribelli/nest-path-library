@@ -7,7 +7,6 @@ import {
   ForbiddenException,
   NotFoundException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
 
 describe('Loans', () => {
   let prismaService: PrismaService;
