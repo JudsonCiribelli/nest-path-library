@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
@@ -65,6 +70,10 @@ export class BooksService {
 
     if (!bookExist) {
       throw new HttpException('Livro não encontrado!', HttpStatus.NOT_FOUND);
+    }
+
+    if (bookExist.status === 'BORROWED') {
+      throw new ConflictException('Este livro não pode ser deletado.');
     }
 
     try {
