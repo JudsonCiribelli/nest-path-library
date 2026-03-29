@@ -51,11 +51,20 @@ export class LoanService {
 
     try {
       return await this.prisma.$transaction(async (tx) => {
+        const book = await tx.book.findUnique({
+          where: { id: createLoanDto.bookId },
+        });
+
+        if (!book) throw new NotFoundException('Livro não encontrado');
+        if (book.status === 'BORROWED') {
+          throw new ConflictException('Livro já emprestado');
+        }
+
         const loan = await tx.loan.create({
           data: {
             userId: userId,
             bookId: book.id,
-            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000), // 14 dias
+            dueDate: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
           },
         });
 
