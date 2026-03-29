@@ -6,6 +6,7 @@ import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { CreateBookDto } from './dto/create-book.dto';
 import { mock } from 'node:test';
+import { resourceLimits } from 'worker_threads';
 
 describe('BooksController', () => {
   let booksController: BooksController;
@@ -171,5 +172,31 @@ describe('BooksController', () => {
     });
   });
 
-  describe('DELETE /books', () => {});
+  describe('DELETE /books', () => {
+    it('should delete a book by id', async () => {
+      const category = {
+        name: 'Ficção',
+        id: '123-ABC',
+      };
+
+      const author = {
+        name: 'Argus ciribelli',
+        id: '456-DEF',
+      };
+
+      const book = {
+        id: '789-GHI',
+        title: '',
+        description: '',
+        authorId: author.id,
+        categoryId: category.id,
+        pages: 200,
+        year: 1998,
+      };
+
+      mockBooksService.deleteABook.mockResolvedValue(book.id);
+
+      expect(mockBooksService.deleteABook).toHaveBeenCalled();
+    });
+  });
 });
