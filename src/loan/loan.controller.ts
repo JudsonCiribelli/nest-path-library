@@ -53,7 +53,7 @@ export class LoanController {
   }
 
   @Post()
-  @UseGuards(AuthAdminGuard)
+  @UseGuards(AuthTokenGuard)
   async createLoan(
     @Body() createLoanDto: CreateLoanDto,
     @GetUser('sub') userId: string,
