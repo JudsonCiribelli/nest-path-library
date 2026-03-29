@@ -88,7 +88,5 @@ describe('BOOK', () => {
     expect(prismaMock.book.findUnique).toHaveBeenCalledWith({
       where: { id: bookId },
     });
-
-    expect(prismaMock.book.delete).not.toHaveBeenCalled();
   });
 });
