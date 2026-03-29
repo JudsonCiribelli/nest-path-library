@@ -4,6 +4,8 @@ import { BooksService } from './books.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 import { RolesGuard } from 'src/common/guards/roles.guard';
+import { CreateBookDto } from './dto/create-book.dto';
+import { mock } from 'node:test';
 
 describe('BooksController', () => {
   let booksController: BooksController;
@@ -137,4 +139,37 @@ describe('BooksController', () => {
       expect(result).toEqual(expectBook);
     });
   });
+
+  describe('POST /books', () => {
+    it('should create a new book', async () => {
+      const category = {
+        name: 'Ficção',
+        id: '123-ABC',
+      };
+
+      const author = {
+        name: 'Argus ciribelli',
+        id: '456-EFG',
+      };
+
+      const book: CreateBookDto = {
+        title: '',
+        description: '',
+        authorId: author.id,
+        categoryId: category.id,
+        pages: 200,
+        year: 1998,
+      };
+
+      mockBooksService.createNewBook.mockResolvedValue(book);
+
+      const result = await booksController.createBook(book);
+
+      expect(mockBooksService.createNewBook).toHaveBeenCalled();
+      expect(mockBooksService.createNewBook).toHaveBeenCalledWith(book);
+      expect(result).toEqual(book);
+    });
+  });
+
+  describe('DELETE /books', () => {});
 });
