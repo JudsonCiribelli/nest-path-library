@@ -22,18 +22,27 @@ import { GetUser } from 'src/common/decorator/get-user.decorator';
 import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
 import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(AuthTokenGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Busca os dados do usuário logado.' })
   @Get('profile')
   async getUserProfile(@GetUser('sub') userId: string) {
     console.log('ID vindo do Token:', userId);
     return this.usersService.getUserProfile(userId);
   }
 
+  @ApiOperation({ summary: 'Cria um novo usuário.' })
   @Post()
   @UseInterceptors(TransformInterceptor)
   async createUser(@Body() createUserDto: CreateUserDto) {
@@ -42,6 +51,22 @@ export class UsersController {
 
   @Post('upload')
   @UseGuards(AuthTokenGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        imageProfile: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary: 'Usuário logado pode cadastrar uma imagem de perfil.',
+  })
   @UseInterceptors(TransformInterceptor)
   @UseInterceptors(FileInterceptor('imageProfile'))
   async imageProfile(
@@ -65,12 +90,21 @@ export class UsersController {
 
   @Delete('/upload')
   @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'Usuário logado pode deletar sua imagem de perfil.',
+  })
+  @ApiBearerAuth()
   @UseInterceptors(TransformInterceptor)
   async deleteUserImage(@tokenPayloadParam() tokenPayload: TokenPayloadDto) {
     return this.usersService.deleteUserImage(tokenPayload);
   }
+
   @Delete(':id')
   @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'Deleta um usuário.',
+  })
+  @ApiBearerAuth()
   async deleteUser(
     @Param('id') id: string,
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
@@ -80,6 +114,10 @@ export class UsersController {
 
   @Patch(':id')
   @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'Atualiza os dados do usuário logado.',
+  })
+  @ApiBearerAuth()
   async updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,

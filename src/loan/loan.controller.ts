@@ -5,7 +5,6 @@ import {
   Param,
   Patch,
   Post,
-  Query,
   UseGuards,
 } from '@nestjs/common';
 import { LoanService } from './loan.service';
@@ -17,6 +16,7 @@ import { Roles } from 'src/common/decorator/roles.decorator';
 import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
 import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
+import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller('loan')
 export class LoanController {
@@ -24,6 +24,10 @@ export class LoanController {
 
   @Get('my-actives')
   @UseGuards(AuthAdminGuard)
+  @ApiOperation({
+    summary: 'Busca todos os livros que estão alugados do usuário logado.',
+  })
+  @ApiBearerAuth()
   async listUserLoans(
     @GetUser('sub') userId: string,
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
@@ -31,13 +35,12 @@ export class LoanController {
     return this.loanService.listUserLoans(userId, tokenPayload);
   }
 
-  @Get()
-  async getUserLoan(@Query('userId') userId: string) {
-    return this.loanService.getUserLoan(userId);
-  }
-
   @Get('my-history')
   @UseGuards(AuthAdminGuard)
+  @ApiOperation({
+    summary: 'Retorna todos os livros que estão alugados com o usuário logado.',
+  })
+  @ApiBearerAuth()
   async listAllUserLoans(
     @GetUser('sub') userId: string,
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
@@ -47,6 +50,9 @@ export class LoanController {
 
   @Get('loans')
   @Roles('ADMIN')
+  @ApiOperation({
+    summary: 'Listas todos os livros alugados com todos os usuário. (ADMIN)',
+  })
   @UseGuards(AuthAdminGuard, RolesGuard)
   async listAllLoans() {
     return this.loanService.loans();
@@ -54,6 +60,10 @@ export class LoanController {
 
   @Post()
   @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'O usuário logado pode alugar um livro.',
+  })
+  @ApiBearerAuth()
   async createLoan(
     @Body() createLoanDto: CreateLoanDto,
     @GetUser('sub') userId: string,
@@ -64,6 +74,10 @@ export class LoanController {
 
   @Patch(':id/return')
   @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'O usuário devolve o livro alugado anteriormente.',
+  })
+  @ApiBearerAuth()
   async updateBookStatus(
     @Param('loanId') loanId: string,
     @GetUser('sub') userId: string,
