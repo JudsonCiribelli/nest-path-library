@@ -151,30 +151,6 @@ export class LoanService {
     });
   }
 
-  async getUserLoan(userId: string) {
-    try {
-      const userLoans = await this.prisma.loan.findMany({
-        where: {
-          userId: userId,
-        },
-        include: {
-          book: true,
-        },
-        orderBy: {
-          dueDate: 'asc',
-        },
-      });
-
-      return userLoans;
-    } catch (error) {
-      console.log(error);
-      throw new HttpException(
-        'Error ao buscar empréstimos do usuário',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
-  }
-
   async updateBookStatus(loanId: string, userId: string) {
     const loan = await this.prisma.loan.findUnique({
       where: {
