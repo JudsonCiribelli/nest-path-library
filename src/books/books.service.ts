@@ -7,12 +7,15 @@ import {
 import { CreateBookDto } from './dto/create-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { ResponseBooksDto } from './dto/response-book.dto';
 
 @Injectable()
 export class BooksService {
   constructor(private prisma: PrismaService) {}
 
-  async listAllBooks(paginationDto: PaginationDto) {
+  async listAllBooks(
+    paginationDto: PaginationDto,
+  ): Promise<ResponseBooksDto[]> {
     const { limit = 10, offset = 0 } = paginationDto;
 
     return await this.prisma.book.findMany({
@@ -24,7 +27,7 @@ export class BooksService {
     });
   }
 
-  async findOneBook(bookId: string) {
+  async findOneBook(bookId: string): Promise<ResponseBooksDto> {
     const bookExist = await this.prisma.book.findUnique({
       where: {
         id: bookId,
@@ -38,7 +41,7 @@ export class BooksService {
     return bookExist;
   }
 
-  async createNewBook(createBookDto: CreateBookDto) {
+  async createNewBook(createBookDto: CreateBookDto): Promise<ResponseBooksDto> {
     try {
       const book = await this.prisma.book.create({
         data: {
@@ -61,7 +64,7 @@ export class BooksService {
     }
   }
 
-  async deleteABook(bookId: string) {
+  async deleteABook(bookId: string): Promise<ResponseBooksDto> {
     const bookExist = await this.prisma.book.findUnique({
       where: {
         id: bookId,
@@ -91,7 +94,10 @@ export class BooksService {
     }
   }
 
-  async findBooksByCategory(categoryId: string, paginationDto: PaginationDto) {
+  async findBooksByCategory(
+    categoryId: string,
+    paginationDto: PaginationDto,
+  ): Promise<ResponseBooksDto[]> {
     const { limit = 10, offset = 0 } = paginationDto;
 
     const books = await this.prisma.book.findMany({
@@ -112,7 +118,10 @@ export class BooksService {
     return books;
   }
 
-  async findBooksByAuthor(authorId: string, paginationDto: PaginationDto) {
+  async findBooksByAuthor(
+    authorId: string,
+    paginationDto: PaginationDto,
+  ): Promise<ResponseBooksDto[]> {
     const { limit = 10, offset = 0 } = paginationDto;
 
     const books = await this.prisma.book.findMany({
