@@ -52,6 +52,7 @@ export class AuthService {
 
     const token = await this.jwtService.signAsync(payload, {
       secret: this.jwtConfiguration.secret,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
       expiresIn: this.jwtConfiguration.jwtTtl as any,
       audience: this.jwtConfiguration.audience,
       issuer: this.jwtConfiguration.issuer,
