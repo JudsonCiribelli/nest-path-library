@@ -1,8 +1,12 @@
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import {
+  BadRequestException,
   ConflictException,
   HttpException,
   HttpStatus,
   Injectable,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -140,5 +144,44 @@ export class BooksService {
     }
 
     return books;
+  }
+
+  async uploadBookImage(bookImage: Express.Multer.File, bookId: string) {
+    try {
+      const book = await this.prisma.book.findUnique({
+        where: {
+          id: bookId,
+        },
+      });
+
+      if (!book) {
+        throw new NotFoundException('Livro não encontrado!');
+      }
+
+      const bookTitle = book.title.trim();
+
+      const extensionName = path
+        .extname(bookImage.originalname)
+        .toLowerCase()
+        .substring(1);
+      const fileName = `${bookTitle}-${book.id}.${extensionName}`;
+      const fileLocale = path.resolve(process.cwd(), 'files', fileName);
+
+      await fs.writeFile(fileLocale, bookImage.buffer);
+
+      await this.prisma.book.update({
+        where: {
+          id: book.id,
+        },
+        data: {
+          bookImage: fileName,
+        },
+      });
+
+      return 'Imagem cadastrada com sucesso';
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error ao cadastrar imagem.');
+    }
   }
 }

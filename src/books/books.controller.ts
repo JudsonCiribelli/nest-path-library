@@ -3,9 +3,12 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Post,
   Query,
+  UploadedFile,
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
@@ -17,7 +20,14 @@ import { TransformInterceptor } from 'src/common/interceptor/transformer.interce
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
-import { ApiOperation, ApiQuery } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+  ApiQuery,
+} from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('books')
 export class BooksController {
@@ -98,11 +108,51 @@ export class BooksController {
   @Post()
   @Roles('ADMIN')
   @ApiOperation({
-    summary: 'Cria um novo autor.',
+    summary: 'Cria um novo livro.',
   })
   @UseGuards(AuthTokenGuard, RolesGuard)
   async createBook(@Body() createBookDto: CreateBookDto) {
     return this.booksService.createNewBook(createBookDto);
+  }
+
+  @Post('upload/:bookId')
+  @UseGuards(AuthTokenGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        bookImage: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Usuário logado (ADMIN) podem cadastrar a imagem de para um livro.',
+  })
+  @UseInterceptors(TransformInterceptor)
+  @UseInterceptors(FileInterceptor('bookImage'))
+  async uploadBookImage(
+    @Param('bookId') bookId: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /jpeg|jpg|png/g,
+        })
+        .addMaxSizeValidator({
+          maxSize: 10 * (1024 * 1024),
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    bookImage: Express.Multer.File,
+  ) {
+    return this.booksService.uploadBookImage(bookImage, bookId);
   }
 
   @Delete('/book/:bookId')
