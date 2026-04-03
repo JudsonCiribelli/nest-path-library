@@ -1,3 +1,4 @@
+import 'multer';
 import {
   Body,
   Controller,
@@ -8,7 +9,6 @@ import {
   ParseFilePipeBuilder,
   Patch,
   Post,
-  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
