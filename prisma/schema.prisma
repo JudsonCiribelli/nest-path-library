@@ -51,6 +51,7 @@ model Book {
   description String?
   pages       Int
   year        Int
+  bookImage   String?
   status      BookStatus @default(AVAILABLE)
 
   authorId String
