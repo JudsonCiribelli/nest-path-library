@@ -25,10 +25,11 @@ model User {
 }
 
 model Author {
-  id        String    @id @default(uuid())
-  name      String
-  bio       String?
-  birthDate DateTime?
+  id          String    @id @default(uuid())
+  name        String
+  bio         String?
+  birthDate   DateTime?
+  authorImage String?
 
   books   Book[]
   reviews Review[]
