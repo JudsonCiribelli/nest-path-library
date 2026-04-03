@@ -1,3 +1,5 @@
+import * as path from 'node:path';
+import * as fs from 'node:fs/promises';
 import {
   BadRequestException,
   ConflictException,
@@ -57,9 +59,6 @@ export class AuthorService {
         },
       });
     } catch (error) {
-      if (error.code === 'P2025') {
-        throw new NotFoundException('Autor não encontrado para exclusão.');
-      }
       console.log('Error deleteAuthor:' + error);
       throw new BadRequestException('Erro ao deletar autor.');
     }
@@ -122,7 +121,7 @@ export class AuthorService {
         birthDate: updateAuthorDTO.birthDate,
       };
 
-      const author = await this.prisma.author.update({
+      await this.prisma.author.update({
         where: {
           id: authorExists.id,
         },
@@ -140,6 +139,45 @@ export class AuthorService {
         'Erro ao atualizar autor',
         HttpStatus.BAD_REQUEST,
       );
+    }
+  }
+
+  async uploadAuthorImage(authorImage: Express.Multer.File, authorId: string) {
+    try {
+      const author = await this.prisma.author.findUnique({
+        where: {
+          id: authorId,
+        },
+      });
+
+      if (!author) {
+        throw new NotFoundException('Autor não encontrado.');
+      }
+
+      const authorName = author.name.trim();
+      const extensionName = path
+        .extname(authorImage.originalname)
+        .toLowerCase()
+        .substring(1);
+
+      const fileName = `${authorName}-${author.id}.${extensionName}`;
+      const fileLocale = path.resolve(process.cwd(), 'files', fileName);
+
+      await fs.writeFile(fileLocale, authorImage.buffer);
+
+      await this.prisma.author.update({
+        where: {
+          id: author.id,
+        },
+        data: {
+          authorImage: fileName,
+        },
+      });
+
+      return 'Imagem cadastrada com sucesso.';
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error ao cadastras imagem.');
     }
   }
 }

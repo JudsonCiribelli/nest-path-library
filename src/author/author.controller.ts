@@ -3,17 +3,28 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Param,
+  ParseFilePipeBuilder,
   Patch,
   Post,
+  UploadedFile,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
 import { Roles } from 'src/common/decorator/roles.decorator';
 import { RolesGuard } from 'src/common/guards/roles.guard';
 import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
-import { ApiOperation } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiOperation,
+} from '@nestjs/swagger';
+import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('author')
 export class AuthorController {
@@ -45,6 +56,46 @@ export class AuthorController {
   @UseGuards(AuthTokenGuard, RolesGuard)
   async deleteAuthor(@Param() id: string) {
     return await this.authorService.deleteAuthor(id);
+  }
+
+  @Post('upload/:authorId')
+  @UseGuards(AuthTokenGuard)
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        authorImage: {
+          type: 'string',
+          format: 'binary',
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
+  @ApiOperation({
+    summary:
+      'Usuário logado (ADMIN) podem cadastrar a imagem de para um autor.',
+  })
+  @UseInterceptors(TransformInterceptor)
+  @UseInterceptors(FileInterceptor('authorImage'))
+  async uploadAuthorImage(
+    @Param('authorId') authorId: string,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addFileTypeValidator({
+          fileType: /jpeg|jpg|png/g,
+        })
+        .addMaxSizeValidator({
+          maxSize: 10 * (1024 * 1024),
+        })
+        .build({
+          errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
+        }),
+    )
+    authorImage: Express.Multer.File,
+  ) {
+    return this.authorService.uploadAuthorImage(authorImage, authorId);
   }
 
   @Patch(':authorId')
