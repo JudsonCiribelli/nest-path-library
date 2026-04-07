@@ -7,7 +7,6 @@ import { RolesGuard } from 'src/common/guards/roles.guard';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('category')
-@UseGuards(AuthAdminGuard)
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
