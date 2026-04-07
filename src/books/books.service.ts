@@ -28,6 +28,14 @@ export class BooksService {
       where: {
         status: 'AVAILABLE',
       },
+      include: {
+        author: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
     });
   }
 
@@ -35,6 +43,13 @@ export class BooksService {
     const bookExist = await this.prisma.book.findUnique({
       where: {
         id: bookId,
+      },
+      include: {
+        author: {
+          select: {
+            name: true,
+          },
+        },
       },
     });
 
@@ -133,6 +148,20 @@ export class BooksService {
       skip: offset,
       where: {
         authorId: authorId,
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+        category: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
       },
     });
 
