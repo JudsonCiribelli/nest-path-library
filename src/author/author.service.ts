@@ -16,7 +16,20 @@ export class AuthorService {
   constructor(private prisma: PrismaService) {}
 
   async getAuthors() {
-    return await this.prisma.author.findMany();
+    return await this.prisma.author.findMany({
+      include: {
+        books: {
+          include: {
+            category: {
+              select: {
+                name: true,
+                id: true,
+              },
+            },
+          },
+        },
+      },
+    });
   }
 
   async registerAuthor(createAuthorDto: CreateAuthorDto) {
