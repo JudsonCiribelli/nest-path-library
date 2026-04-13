@@ -110,6 +110,7 @@ export class UsersService {
         },
         select: {
           name: true,
+          id: true,
           email: true,
           phone: true,
           imageProfile: true,
