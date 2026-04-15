@@ -139,6 +139,8 @@ export class LoanService {
           select: {
             title: true,
             description: true,
+            bookImage: true,
+            status: true,
             pages: true,
             year: true,
             category: true,
