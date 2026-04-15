@@ -72,7 +72,7 @@ export class LoanController {
     return this.loanService.createLoan(createLoanDto, userId, tokenPayload);
   }
 
-  @Patch(':id/return')
+  @Patch(':loanId/return')
   @UseGuards(AuthTokenGuard)
   @ApiOperation({
     summary: 'O usuário devolve o livro alugado anteriormente.',
