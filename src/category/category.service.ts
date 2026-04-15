@@ -42,4 +42,16 @@ export class CategoryService {
       },
     });
   }
+
+  async getCategoryById(categoryId: string) {
+    return await this.prisma.category.findMany({
+      where: {
+        id: categoryId,
+      },
+      select: {
+        name: true,
+        id: true,
+      },
+    });
+  }
 }

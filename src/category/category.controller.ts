@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
 import { AuthAdminGuard } from 'src/common/guards/admin.guard';
@@ -14,6 +14,12 @@ export class CategoryController {
   @Get()
   async findAllCategory() {
     return await this.categoryService.findAllCategory();
+  }
+
+  @ApiOperation({ summary: 'Busca categoria pelo seu id.' })
+  @Get(':categoryId')
+  async findCategoryById(@Param('categoryId') categoryId: string) {
+    return await this.categoryService.getCategoryById(categoryId);
   }
 
   @Post()
