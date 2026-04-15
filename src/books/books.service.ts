@@ -125,6 +125,13 @@ export class BooksService {
       where: {
         categoryId: categoryId,
       },
+      include: {
+        author: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
 
     if (books.length === 0) {
