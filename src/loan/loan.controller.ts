@@ -9,13 +9,13 @@ import {
 } from '@nestjs/common';
 import { LoanService } from './loan.service';
 import { CreateLoanDto } from './dto/create-loan';
-import { AuthAdminGuard } from 'src/common/guards/admin.guard';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
-import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
-import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
+import { AuthAdminGuard } from '@/common/guards/admin.guard';
+import { GetUser } from '@/common/decorator/get-user.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { Roles } from '@/common/decorator/roles.decorator';
+import { tokenPayloadParam } from '@/auth/param/token-payload.param';
+import { TokenPayloadDto } from '@/auth/dto/token-payload.dto';
+import { AuthTokenGuard } from '@/auth/guard/auth-token.guard';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
 @Controller('loan')

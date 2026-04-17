@@ -1,13 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LoanController } from './loan.controller';
 import { LoanService } from './loan.service';
-import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
-import { AuthAdminGuard } from 'src/common/guards/admin.guard';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { AuthTokenGuard } from '@/auth/guard/auth-token.guard';
+import { AuthAdminGuard } from '@/common/guards/admin.guard';
+import { RolesGuard } from '@/common/guards/roles.guard';
 
 describe('Loan Controller', () => {
   let loanController: LoanController;
-
   const mockLoanService = {
     createLoan: jest.fn(),
     updateBookStatus: jest.fn(),

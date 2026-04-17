@@ -6,9 +6,9 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { CreateLoanDto } from './dto/create-loan';
-import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
+import { TokenPayloadDto } from '@/auth/dto/token-payload.dto';
 
 @Injectable()
 export class LoanService {

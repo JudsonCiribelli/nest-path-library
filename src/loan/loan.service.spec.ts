@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { LoanService } from './loan.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateLoanDto } from './dto/create-loan';
