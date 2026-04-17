@@ -14,16 +14,16 @@ import {
 } from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { CreateAuthorDto } from './dto/create-author.dto';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
-import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
+import { Roles } from '@/common/decorator/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
+import { AuthTokenGuard } from '@/auth/guard/auth-token.guard';
 import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
   ApiOperation,
 } from '@nestjs/swagger';
-import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
+import { TransformInterceptor } from '@/common/interceptor/transformer.interceptor';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('author')

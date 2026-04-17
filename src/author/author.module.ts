@@ -1,9 +1,10 @@
 import { Module } from '@nestjs/common';
 import { AuthorService } from './author.service';
 import { AuthorController } from './author.controller';
-import { PrismaModule } from 'src/prisma/prisma.module';
+
 import { APP_FILTER } from '@nestjs/core';
-import { ApiExceptionFilters } from 'src/common/filters/exception-filters';
+import { ApiExceptionFilters } from '@/common/filters/exception-filters';
+import { PrismaModule } from '@/prisma/prisma.module';
 
 @Module({
   imports: [PrismaModule],

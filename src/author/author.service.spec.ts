@@ -2,7 +2,6 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { AuthorService } from './author.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateAuthorDto } from './dto/create-author.dto';
-import { faker } from '@faker-js/faker';
 import { ConflictException } from '@nestjs/common';
 
 describe('AUTHOR', () => {
