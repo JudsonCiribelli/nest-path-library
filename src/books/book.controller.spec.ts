@@ -171,7 +171,7 @@ describe('BooksController', () => {
   });
 
   describe('DELETE /books', () => {
-    it('should delete a book by id', async () => {
+    it('should delete a book by id', () => {
       const category = {
         name: 'Ficção',
         id: '123-ABC',

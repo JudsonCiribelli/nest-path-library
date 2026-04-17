@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { BooksService } from './books.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateBookDto } from './dto/create-book.dto';

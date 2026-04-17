@@ -9,8 +9,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateBookDto } from './dto/create-book.dto';
-import { PrismaService } from 'src/prisma/prisma.service';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
+import { PrismaService } from '@/prisma/prisma.service';
+import { PaginationDto } from '@/common/dto/pagination.dto';
 import { ResponseBooksDto } from './dto/response-book.dto';
 
 @Injectable()

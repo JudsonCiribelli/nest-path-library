@@ -14,12 +14,12 @@ import {
 } from '@nestjs/common';
 import { BooksService } from './books.service';
 import { CreateBookDto } from './dto/create-book.dto';
-import { PaginationDto } from 'src/common/dto/pagination.dto';
-import { LoggerInterceptor } from 'src/common/interceptor/logger.interceptor';
-import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
-import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { PaginationDto } from '@/common/dto/pagination.dto';
+import { LoggerInterceptor } from '@/common/interceptor/logger.interceptor';
+import { TransformInterceptor } from '@/common/interceptor/transformer.interceptor';
+import { AuthTokenGuard } from '@/auth/guard/auth-token.guard';
+import { Roles } from '@/common/decorator/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
 import {
   ApiBearerAuth,
   ApiBody,

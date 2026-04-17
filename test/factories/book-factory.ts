@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { CreateBookDto } from 'src/books/dto/create-book.dto';
+import { CreateBookDto } from '@/books/dto/create-book.dto';
 
 const author = {
   id: faker.string.uuid(),
