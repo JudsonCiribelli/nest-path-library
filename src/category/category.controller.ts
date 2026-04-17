@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { CategoryService } from './category.service';
-import { AuthAdminGuard } from 'src/common/guards/admin.guard';
-import { Roles } from 'src/common/decorator/roles.decorator';
-import { RolesGuard } from 'src/common/guards/roles.guard';
+import { AuthAdminGuard } from '@/common/guards/admin.guard';
+import { Roles } from '@/common/decorator/roles.decorator';
+import { RolesGuard } from '@/common/guards/roles.guard';
 import { ApiOperation } from '@nestjs/swagger';
 
 @Controller('category')

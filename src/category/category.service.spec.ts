@@ -1,4 +1,4 @@
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { CategoryService } from './category.service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CreateCategoryDto } from './dto/create-category.dto';
