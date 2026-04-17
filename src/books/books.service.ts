@@ -220,4 +220,20 @@ export class BooksService {
       throw new BadRequestException('Error ao cadastrar imagem.');
     }
   }
+
+  async findBookByTitle(title?: string) {
+    return await this.prisma.book.findMany({
+      where: {
+        ...(title && {
+          title: {
+            contains: title,
+          },
+        }),
+      },
+      include: {
+        author: true,
+        category: true,
+      },
+    });
+  }
 }

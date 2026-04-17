@@ -33,6 +33,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class BooksController {
   constructor(private readonly booksService: BooksService) {}
 
+  @ApiOperation({ summary: 'Busca livros pelo titulo.' })
+  @Get('/title')
+  async findBookByTitle(@Query('title') title: string) {
+    return this.booksService.findBookByTitle(title);
+  }
+
   @Get()
   @UseInterceptors(LoggerInterceptor)
   @ApiOperation({ summary: 'Lista todos os livros.' })
