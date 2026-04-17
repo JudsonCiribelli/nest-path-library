@@ -1,8 +1,8 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { ReviewService } from './review.service';
-import { AuthAdminGuard } from 'src/common/guards/admin.guard';
+import { AuthAdminGuard } from '@/common/guards/admin.guard';
 import { CreateBookReviewDto } from './dto/create-book-review.dto';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
+import { GetUser } from '@/common/decorator/get-user.decorator';
 import { CreateAuthorReviewDto } from './dto/create-author-review.dto';
 import { ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 
