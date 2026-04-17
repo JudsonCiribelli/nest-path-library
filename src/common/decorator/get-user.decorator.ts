@@ -1,9 +1,9 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { REQUEST_TOKEN_PAYLOAD } from 'src/auth/common/auth.constants';
+import { REQUEST_TOKEN_PAYLOAD } from '@/auth/common/auth.constants';
 
 export const GetUser = createParamDecorator(
   (data: string | undefined, ctx: ExecutionContext) => {
-    const request = ctx.switchToHttp().getRequest();
+    const request: string = ctx.switchToHttp().getRequest();
 
     const payload = request[REQUEST_TOKEN_PAYLOAD];
 

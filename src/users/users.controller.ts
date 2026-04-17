@@ -15,12 +15,12 @@ import {
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { TransformInterceptor } from 'src/common/interceptor/transformer.interceptor';
+import { TransformInterceptor } from '@/common/interceptor/transformer.interceptor';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthTokenGuard } from 'src/auth/guard/auth-token.guard';
-import { GetUser } from 'src/common/decorator/get-user.decorator';
-import { tokenPayloadParam } from 'src/auth/param/token-payload.param';
-import { TokenPayloadDto } from 'src/auth/dto/token-payload.dto';
+import { AuthTokenGuard } from '@/auth/guard/auth-token.guard';
+import { GetUser } from '@/common/decorator/get-user.decorator';
+import { tokenPayloadParam } from '@/auth/param/token-payload.param';
+import { TokenPayloadDto } from '@/auth/dto/token-payload.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
   ApiBearerAuth,

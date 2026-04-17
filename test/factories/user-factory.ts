@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { ImATeapotException } from '@nestjs/common';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from '@/users/dto/create-user.dto';
 
 export function makeCreateUserDto(
   override?: Partial<CreateUserDto>,
