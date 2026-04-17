@@ -7,6 +7,6 @@ export const tokenPayloadParam = createParamDecorator(
     const context = ctx.switchToHttp();
     const request: Request = context.getRequest();
 
-    return request[REQUEST_TOKEN_PAYLOAD];
+    return request[REQUEST_TOKEN_PAYLOAD] as string;
   },
 );

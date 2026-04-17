@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   CanActivate,
   ExecutionContext,
@@ -10,7 +11,7 @@ import { Request } from 'express';
 import jwtConfig from '../config/jwt.config';
 import type { ConfigType } from '@nestjs/config';
 import { REQUEST_TOKEN_PAYLOAD } from '../common/auth.constants';
-import { PrismaService } from 'src/prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 
 @Injectable()
 export class AuthTokenGuard implements CanActivate {
@@ -40,6 +41,7 @@ export class AuthTokenGuard implements CanActivate {
 
       const userStatus = await this.prisma.user.findUnique({
         where: {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
           id: payload?.sub,
         },
       });

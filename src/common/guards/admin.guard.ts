@@ -8,8 +8,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 import type { ConfigType } from '@nestjs/config';
-import jwtConfig from 'src/auth/config/jwt.config';
-import { REQUEST_TOKEN_PAYLOAD } from 'src/auth/common/auth.constants';
+import jwtConfig from '@/auth/config/jwt.config';
+import { REQUEST_TOKEN_PAYLOAD } from '@/auth/common/auth.constants';
 
 @Injectable()
 export class AuthAdminGuard implements CanActivate {

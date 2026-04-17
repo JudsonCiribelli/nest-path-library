@@ -2,17 +2,17 @@ import { IsInt, IsString } from 'class-validator';
 
 export class TokenPayloadDto {
   @IsString()
-  sub: string;
+  sub?: string;
   @IsString()
-  email: string;
+  email?: string;
   @IsString()
-  role: string;
+  role?: string;
   @IsInt()
-  iat: number;
+  iat?: number;
   @IsInt()
-  exp: number;
+  exp?: number;
   @IsString()
-  aud: string;
+  aud?: string;
   @IsString()
-  iss: string;
+  iss?: string;
 }

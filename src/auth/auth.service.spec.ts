@@ -5,10 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import jwtConfig from './config/jwt.config';
 import { HttpException, UnauthorizedException } from '@nestjs/common';
-import {
-  makeCreateUserDto,
-  makeUserEntity,
-} from '../../test/factories/user-factory';
+import { makeUserEntity } from '../../test/factories/user-factory';
 
 describe('AUTH', () => {
   let prismaService: PrismaService;
@@ -71,7 +68,7 @@ describe('AUTH', () => {
       role: 'USER',
     };
 
-    const createUserDto = makeCreateUserDto();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     const createdUserMocked = makeUserEntity({
       name: mockUserInDb.name,
       email: mockUserInDb.email,
@@ -90,6 +87,7 @@ describe('AUTH', () => {
       await expect(authService.SignInUser(loginDto)).rejects.toThrow(
         HttpException,
       );
+
       expect(hashingService.compare).not.toHaveBeenCalled();
     });
 
