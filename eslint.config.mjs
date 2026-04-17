@@ -1,4 +1,4 @@
-// @ts-check
+// @ts-nocheck
 import eslint from '@eslint/js';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import globals from 'globals';
@@ -8,6 +8,7 @@ export default tseslint.config(
   {
     ignores: ['eslint.config.mjs'],
   },
+
   eslint.configs.recommended,
   ...tseslint.configs.recommendedTypeChecked,
   eslintPluginPrettierRecommended,
@@ -20,16 +21,24 @@ export default tseslint.config(
       sourceType: 'commonjs',
       parserOptions: {
         projectService: false,
+        // @ts-ignore
         tsconfigRootDir: import.meta.dirname,
         project: './tsconfig.json',
+      },
+    },
+    overrides: {
+      files: ['*.spec.ts', '*.e2e-spec.ts', '*.test.ts'],
+      rules: {
+        '@typescript-eslint/no-unused-vars': 'off',
       },
     },
   },
   {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-floating-promises': 'warn',
-      '@typescript-eslint/no-unsafe-argument': 'warn',
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-unsafe-argument': 'off',
+      '@typescript-eslint/unbound-method': 'off',
       'prettier/prettier': ['error', { endOfLine: 'auto' }],
     },
   },

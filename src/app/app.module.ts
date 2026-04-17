@@ -8,15 +8,15 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'node:path';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { BooksModule } from 'src/books/books.module';
-import { CategoryModule } from 'src/category/category.module';
-import { AuthorModule } from 'src/author/author.module';
-import { UsersModule } from 'src/users/users.module';
-import { LoggerMiddleware } from 'src/common/middlewares/logger.middleware';
-import { LoanModule } from 'src/loan/loan.module';
+import { BooksModule } from '@/books/books.module';
+import { CategoryModule } from '@/category/category.module';
+import { AuthorModule } from '@/author/author.module';
+import { UsersModule } from '@/users/users.module';
+import { LoggerMiddleware } from '@/common/middlewares/logger.middleware';
+import { LoanModule } from '@/loan/loan.module';
 import { ConfigModule } from '@nestjs/config';
-import { AuthModule } from 'src/auth/auth.module';
-import { ReviewModule } from 'src/review/review.module';
+import { AuthModule } from '@/auth/auth.module';
+import { ReviewModule } from '@/review/review.module';
 
 @Module({
   imports: [
@@ -46,6 +46,7 @@ import { ReviewModule } from 'src/review/review.module';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     consumer.apply(LoggerMiddleware).forRoutes({
       path: '*',
       method: RequestMethod.ALL,

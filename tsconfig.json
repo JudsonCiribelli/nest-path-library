@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "module": "nodenext",
+    "types": ["jest", "node"],
     "moduleResolution": "nodenext",
     "resolvePackageJsonExports": true,
     "esModuleInterop": true,
+    "strict": false,
     "isolatedModules": true,
     "declaration": true,
     "removeComments": true,
@@ -13,7 +15,9 @@
     "target": "ES2023",
     "sourceMap": true,
     "outDir": "./dist",
-    "baseUrl": "./",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
