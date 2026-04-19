@@ -193,4 +193,19 @@ export class AuthorService {
       throw new BadRequestException('Error ao cadastras imagem.');
     }
   }
+
+  async findAuthorByName(name?: string) {
+    return await this.prisma.author.findMany({
+      where: {
+        ...(name && {
+          name: {
+            contains: name,
+          },
+        }),
+      },
+      include: {
+        books: true,
+      },
+    });
+  }
 }

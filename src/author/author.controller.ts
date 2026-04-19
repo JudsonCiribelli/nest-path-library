@@ -8,6 +8,7 @@ import {
   ParseFilePipeBuilder,
   Patch,
   Post,
+  Query,
   UploadedFile,
   UseGuards,
   UseInterceptors,
@@ -29,6 +30,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 @Controller('author')
 export class AuthorController {
   constructor(private readonly authorService: AuthorService) {}
+
+  @Get('/name')
+  @ApiOperation({ summary: 'Busca autor por nome.' })
+  async getAuthorsByName(@Query('name') name: string) {
+    return await this.authorService.findAuthorByName(name);
+  }
 
   @Get()
   @ApiOperation({ summary: 'Retorna todos os autores cadastrados.' })
