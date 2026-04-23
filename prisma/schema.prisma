@@ -18,6 +18,7 @@ model User {
   createdAt    DateTime   @default(now())
   updatedAt    DateTime   @updatedAt
 
+  books   Book[]
   loans   Loan[]
   reviews Review[]
 
@@ -61,6 +62,7 @@ model Book {
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
+  users   User[]
   loans   Loan[]
   reviews Review[]
 
