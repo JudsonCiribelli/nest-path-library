@@ -164,10 +164,10 @@ export class BooksController {
     return this.booksService.uploadBookImage(bookImage, bookId);
   }
 
-  @Post('/:bookId/favorites')
+  @Post('/favorites/:bookId')
   @UseGuards(AuthTokenGuard)
   @ApiOperation({
-    summary: 'Adiciona o livro a lista de favoritos.',
+    summary: 'Adiciona o livro da lista de favoritos.',
   })
   async addBookFavorite(
     @Param('bookId') bookId: string,
@@ -175,6 +175,19 @@ export class BooksController {
     @tokenPayloadParam() tokenPayload: TokenPayloadDto,
   ) {
     return this.booksService.addFavoriteAdd(userId, bookId, tokenPayload);
+  }
+
+  @Delete('/favorites/:bookId')
+  @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'Remove o livro da lista de favoritos.',
+  })
+  async removeFavoriteBook(
+    @Param('bookId') bookId: string,
+    @GetUser('sub') userId: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.booksService.deleteBookFavorite(userId, bookId, tokenPayload);
   }
 
   @Delete('/book/:bookId')

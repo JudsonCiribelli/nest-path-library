@@ -295,4 +295,68 @@ export class BooksService {
       throw new BadRequestException('Error ao salvar livro');
     }
   }
+
+  async deleteBookFavorite(
+    id: string,
+    bookId: string,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    try {
+      const userExist = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          books: true,
+        },
+      });
+
+      if (!userExist) {
+        throw new HttpException(
+          'Usuário não encontrado!',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (userExist.id !== tokenPayload.sub) {
+        throw new ConflictException(
+          'Você não tem permissão para atualizar este usuário!',
+        );
+      }
+
+      const hasBook = userExist.books.some((book) => book.id === bookId);
+
+      if (!hasBook) {
+        throw new BadRequestException(
+          'Este livro não está nos seus favoritos.',
+        );
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: { id: id },
+        data: {
+          books: {
+            disconnect: { id: bookId },
+          },
+        },
+        include: {
+          books: true,
+        },
+      });
+
+      console.log('Livro removido dos favoritos com sucesso!');
+      return updatedUser;
+    } catch (error) {
+      console.log(error);
+
+      if (
+        error instanceof BadRequestException ||
+        error instanceof HttpException
+      ) {
+        throw error;
+      }
+
+      throw new BadRequestException('Erro ao remover livro favorito');
+    }
+  }
 }
