@@ -12,6 +12,7 @@ import { CreateBookDto } from './dto/create-book.dto';
 import { PrismaService } from '@/prisma/prisma.service';
 import { PaginationDto } from '@/common/dto/pagination.dto';
 import { ResponseBooksDto } from './dto/response-book.dto';
+import { TokenPayloadDto } from '@/auth/dto/token-payload.dto';
 
 @Injectable()
 export class BooksService {
@@ -235,5 +236,63 @@ export class BooksService {
         category: true,
       },
     });
+  }
+
+  async addFavoriteAdd(
+    id: string,
+    bookId: string,
+    tokenPayload: TokenPayloadDto,
+  ) {
+    try {
+      const userExist = await this.prisma.user.findUnique({
+        where: {
+          id: id,
+        },
+        include: {
+          books: true,
+        },
+      });
+
+      if (!userExist) {
+        throw new HttpException(
+          'Usuário não encontrado!',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (userExist.id !== tokenPayload.sub) {
+        throw new ConflictException(
+          'Você não tem permissão para atualizar este usuário!',
+        );
+      }
+
+      const book = await this.prisma.book.findUnique({
+        where: {
+          id: bookId,
+        },
+      });
+
+      if (!book) {
+        throw new NotFoundException('Livro não encontrado!');
+      }
+
+      const updatedUser = await this.prisma.user.update({
+        where: { id: id },
+        data: {
+          books: {
+            connect: { id: bookId },
+          },
+        },
+        include: {
+          books: true,
+        },
+      });
+
+      console.log('Livro adicionado aos favoritos com sucesso!');
+      return updatedUser;
+    } catch (error) {
+      console.log(error);
+      throw new BadRequestException('Error ao salvar livro');
+    }
   }
 }

@@ -28,6 +28,9 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { GetUser } from '@/common/decorator/get-user.decorator';
+import { tokenPayloadParam } from '@/auth/param/token-payload.param';
+import { TokenPayloadDto } from '@/auth/dto/token-payload.dto';
 
 @Controller('books')
 export class BooksController {
@@ -159,6 +162,19 @@ export class BooksController {
     bookImage: Express.Multer.File,
   ) {
     return this.booksService.uploadBookImage(bookImage, bookId);
+  }
+
+  @Post('/:bookId/favorites')
+  @UseGuards(AuthTokenGuard)
+  @ApiOperation({
+    summary: 'Adiciona o livro a lista de favoritos.',
+  })
+  async addBookFavorite(
+    @Param('bookId') bookId: string,
+    @GetUser('sub') userId: string,
+    @tokenPayloadParam() tokenPayload: TokenPayloadDto,
+  ) {
+    return this.booksService.addFavoriteAdd(userId, bookId, tokenPayload);
   }
 
   @Delete('/book/:bookId')
