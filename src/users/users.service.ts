@@ -115,6 +115,15 @@ export class UsersService {
           phone: true,
           imageProfile: true,
           loans: true,
+          books: {
+            include: {
+              author: {
+                select: {
+                  name: true,
+                },
+              },
+            },
+          },
           createdAt: true,
         },
       });
